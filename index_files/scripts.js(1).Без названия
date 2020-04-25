@@ -1,0 +1,352 @@
+// Show/hide mobile drawer
+function mobileDrawer() {
+	if (jQuery(window).width() <= 960) {
+	   jQuery("#primary-menu").insertAfter('.mobile-nav .actions');
+	   jQuery("#utility-menu").appendTo('.mobile-nav div');
+	   jQuery('.mobile-nav .login').prependTo('.actions');
+	   jQuery('.signup').appendTo('.actions');
+	} else {
+	   jQuery("#primary-menu").prependTo('.menu-navigation-container');
+	   jQuery("#utility-menu").appendTo('.menu-social-container');
+	   jQuery('<div class="actions">').remove();
+	   jQuery("body, header, .menu-toggle, .mobile-nav").removeClass('active');
+	   jQuery('.mobile-nav .login').appendTo('header #utility-menu');
+	   jQuery('.signup').appendTo('#primary-menu');
+	}
+	jQuery('#primary-menu li.menu-item-has-children a').click(function() {
+		jQuery(this).siblings('ul').toggleClass('active');
+	});
+}
+
+// Disable parent links on mobile - show children pages insteead
+function adjustParentLinks() {
+	if (jQuery(window).width() <= 960) {
+		jQuery('.menu-item-has-children > a').unbind('click');
+   		jQuery('.menu-item-has-children > a').click(function(e) {
+   			e.preventDefault();
+   			jQuery(this).siblings('ul.sub-menu').toggleClass('active');
+   		});
+	} else {
+		jQuery('.menu-item-has-children > a').unbind('click');
+	}
+}
+
+// Sticky scrolling sidebar
+function stickySidebar() {
+	if (jQuery(window).width() <= 660) {
+		jQuery('aside').trigger("sticky_kit:detach");
+	} else {
+		jQuery('aside').stick_in_parent({offset_top: 100});
+	}
+}
+
+// Social share icons
+function socialShare() {
+	if (jQuery('body').hasClass('single')) {
+		jQuery('.social-share').stick_in_parent({offset_top: 200});
+	  	if (jQuery(window).width() <= 660) {
+			var a = jQuery('.entry-content').offset().top;
+			var b = jQuery('.entry-content').height();
+			var c = jQuery(window).height();
+			var d = jQuery(window).scrollTop();
+			if ((c+d)>(a+b)) {
+				jQuery('.social-share').insertAfter('.entry-content').addClass('fit');
+			} else {
+				jQuery('.social-share').insertBefore('.entry-content').removeClass('fit');
+			}
+		}
+	}
+}
+
+// Header scrolling interactions
+function headerChange() {
+	if (jQuery(this).scrollTop() >= 35) { // Changes if notification bar is present
+	   jQuery("header").addClass('stuck');
+	} else {
+	   jQuery("header").removeClass('stuck');
+	}
+}
+
+// -- Functions -- //
+jQuery(function() {
+
+	// Remove duplicate names from recent posts plugin
+	jQuery('.blog-strip .rpwe-block').insertBefore('.blog-strip .elementor-widget-wp-widget-rpwe_widget');
+	jQuery('.blog-strip .elementor-widget-wp-widget-rpwe_widget .elementor-widget-container').remove();
+
+	// Features page toggle
+	jQuery('.cpu-toggle .thirty').click(function() {
+		jQuery(this).addClass('active').siblings().removeClass('active');
+		jQuery('.cpu-chart').addClass('thirty').removeClass('sixty');
+	});
+	jQuery('.cpu-toggle .sixty').click(function() {
+		jQuery(this).addClass('active').siblings().removeClass('active');
+		jQuery('.cpu-chart').addClass('sixty').removeClass('thirty');
+	});
+
+	// Video player overlay
+	var videosource = jQuery('#video-overlay').data('src');
+	jQuery('.banner-wrap-video-play').click(function() {
+		jQuery('.banner video').get(0).pause();
+		jQuery('.video-overlay').addClass('active');
+		jQuery("#video-overlay").attr('src', videosource + "?autoplay=1&controls=0&showinfo=0&rel=0");
+	});
+	jQuery('.video-overlay-close').click(function() {
+		jQuery('.banner video').get(0).play();
+		jQuery('.video-overlay').removeClass('active');
+		jQuery('#video-overlay').attr('src', '');
+	});
+
+	// Streamer Handbook
+	if (jQuery('body').hasClass('page-handbook')) {
+		var handbookOptions = jQuery('.handbook-options .elementor-widget-container');
+		handbookOptions.replaceWith(function () {
+		    return jQuery('<a/>', {
+		        class: 'elementor-widget-container',
+		        html: this.innerHTML
+		    });
+		});
+
+		jQuery('.handbook-options .elementor-widget-container').each(function() {
+			var catUrl = jQuery(this).children().children().children().attr('href');
+			jQuery(this).attr('href', catUrl);
+		});
+  }
+
+	if (jQuery('body').hasClass('page-our-story')) {
+    jQuery('#jobs-list li span').text('Chicago, IL or Remote');
+    jQuery('#jobs-list li:first-child(1) a').attr("href", "https://strea.mr/2VjNgZT");
+    jQuery('#jobs-list li:nth-child(2) a').attr("href", "https://strea.mr/2O7Yqwp");
+    jQuery('#jobs-list li:nth-child(3) a').attr("href", "https://strea.mr/2IDvDhK");
+	}
+
+	// Tabs
+	jQuery('.tabs-group > div').addClass('hide');
+	jQuery('.tabs-group > div:first-of-type').addClass('show');
+	jQuery('.tabs-nav a').click(function(e){
+	  e.preventDefault();
+    var $this = jQuery(this),
+      tabgroup = '#'+$this.parents('.tabs-nav').data('tabgroup'),
+      others = $this.closest('li').siblings().children('a'),
+      target = $this.attr('href');
+    others.removeClass('active');
+    $this.addClass('active');
+    jQuery(tabgroup).children('div').addClass('hide').removeClass('show');
+    jQuery(target).addClass('show').removeClass('hide');
+	});
+
+	// Add actions container to mobile menu
+	jQuery('<a href="/" class="mobile-logo">').prependTo('.mobile-nav div');
+	jQuery('<ul class="actions">').insertAfter('.mobile-nav .mobile-logo');
+
+	// Move footer elements
+	jQuery('.footer-menu-extras').appendTo('.footer-menu .widget.legal');
+
+	// Remove parentheses on press dates
+	jQuery('.display-posts-listing li .date').text(function(_, text) {
+    return text.replace(/\(|\)/g, '');
+	});
+
+	// Image enlargement
+	jQuery('.enlarge').click(function() {
+		jQuery(this).toggleClass('active')
+		jQuery(this).parents('section').siblings().removeClass('active');
+		jQuery(this).parents('section').siblings().find('.enlarge').removeClass('active');
+		jQuery(this).parent().parent().parent().toggleClass('active');
+		jQuery(this).parents('section').toggleClass('active');
+	});
+
+	// Start Streaming login toggle
+	jQuery('.login-toggle').click(function() {
+		jQuery('.login-switcher').toggleClass('active');
+	});
+
+	jQuery('html').click(function() {
+	  jQuery('.login-switcher').removeClass('active');
+	});
+
+	jQuery('.login-switcher').click(function(event) {
+		event.stopPropagation();
+	});
+
+	// Toggle mobile menu
+	jQuery('.menu-toggle').click(function() {
+		jQuery(this).toggleClass('active');
+		jQuery('#notification').toggleClass('hide');
+		jQuery('body, header, .mobile-nav').toggleClass('active');
+	});
+
+	jQuery('.banner .categories .cat-name:contains("Blog")').parent().parent().remove();
+	jQuery('.post .categories .cat-name:contains("Blog")').parents('.categories').addClass('hide-blog');
+
+	// Social share popups
+	$.fn.socialPopup = function (e, intWidth, intHeight, blnResize) {
+		e.preventDefault();
+		intWidth = intWidth || '500';
+		intHeight = intHeight || '400';
+		strResize = (blnResize ? 'yes' : 'no');
+		var strTitle = ((typeof this.attr('title') !== 'undefined') ? this.attr('title') : 'Social Share'),
+		    strParam = 'width=' + intWidth + ',height=' + intHeight + ',resizable=' + strResize,
+		    objWindow = window.open(this.attr('href'), strTitle, strParam).focus();
+	}
+
+	jQuery('.social-share ul li a.share').on("click", function(e) {
+      $(this).socialPopup(e);
+    });
+
+	// Get current year for footer copyright
+	var currentYear = (new Date()).getFullYear();
+	jQuery('footer span.year').text(currentYear);
+
+	headerChange();
+
+	// Alerts article
+	if (jQuery('body').hasClass('postid-6919')) {
+		jQuery('.sl-element').on('inview', function(event, isInView) {
+		  if (isInView) {
+		    jQuery('.sl-element').addClass('active');
+		  }
+		});
+		jQuery('.m-element').on('inview', function(event, isInView) {
+		  if (isInView) {
+		    jQuery('.m-element').addClass('active');
+		  }
+		});
+		jQuery('.sp-element, .sp-alert').on('inview', function(event, isInView) {
+		  if (isInView) {
+		    jQuery('.sp-element, .sp-alert').addClass('active');
+		  }
+		});
+	}
+});
+
+// Detect mobile on the new homepage
+if (/Mobi|Android/i.test(navigator.userAgent)) {
+	if (jQuery('body').hasClass('page-id-14126')) {
+    jQuery('body').addClass('mobile')
+	}
+}
+
+// If new homepage
+if (jQuery('body').hasClass('page-id-14126')) {
+  if (jQuery(window).width() >= 940) {
+    jQuery('.portal').mouseenter(function() {
+      var targetDiv = jQuery(this).attr('data-name')
+      jQuery('.' + targetDiv + '-background').addClass('show')
+      jQuery(this).siblings().addClass('fade')
+    }).mouseleave(function() {
+      var targetDiv = jQuery(this).attr('data-name')
+      jQuery('.' + targetDiv + '-background').removeClass('show fade')
+      jQuery(this).siblings().removeClass('fade')
+    })
+  }
+}
+
+// -- Scroll Functions -- //
+jQuery(document).scroll(function() {
+	headerChange();
+	//stickySidebar();
+	socialShare();
+});
+
+// -- Resize Functions -- //
+jQuery(window).resize(function() {
+	mobileDrawer();
+	//stickySidebar();
+	socialShare();
+	adjustParentLinks();
+});
+
+// -- Load Functions -- //
+jQuery(window).load(function() {
+	socialShare();
+	mobileDrawer();
+	adjustParentLinks();
+	//stickySidebar();
+	setTimeout(function(){
+		jQuery('.email-share').attr('target','_blank');
+	}, 1000);
+	jQuery('body.page-handbook .streamer-wrap .eye').addClass('inview'); // Show streamer eyes after page has loaded
+	jQuery('.wpcf7-response-output').prependTo('.wpcf7-form');
+});
+
+const COOKIE_NAME = '_lsa'
+/**
+ * @typedef ParsedCookie
+ * @property {string} utm_source window.location.search
+ * @property {string} utm_medium window.location.search
+ * @property {string} utm_campaign window.location.search
+ * @property {string} utm_term window.location.search
+ * @property {string} utm_content window.location.search
+ * @property {string} referrer document.referrer
+ * @property {string} page_url document.URL
+ */
+/**
+ * @typedef {'Initial Marketing Source' | 'Initial Marketing Medium' | 'Initial Marketing Campaign' | 'Initial Marketing Term' | 'Initial Marketing Content' | 'Initial Marketing Referrer' | 'Initial Marketing Landing Page'} AnalyticsCookieKey
+ */
+/**
+ * @typedef {{[T in AnalyticsCookieKey]: string}} AnalyticsCookieObject
+ */
+/**
+ * @param {HTMLDocument} document
+ * @param {string} [cookieName]
+ * @returns {AnalyticsCookieObject} AnalyticsCookieObject
+ */
+const getCookie = (document, cookieName = COOKIE_NAME) => {
+  try {
+    if (!document || !cookieName) {
+      return null
+    }
+    const cookie = document.cookie.split(';').map(j => j.trim()).find(x => x.startsWith(`${cookieName}=`))
+    if (!cookie) return null
+    const re = new RegExp(`^${cookieName}=`)
+    const cookieValue = cookie.replace(re, '')
+    const decodedCookie = atob(cookieValue)
+    return JSON.parse(decodedCookie)
+  } catch (e) {
+    return null
+  }
+}
+/**
+ * @param {string} cookieName
+ * @param {AnalyticsCookieObject} cookieProps
+ */
+const setCookie = (cookieName = COOKIE_NAME, cookieProps) => {
+  const encodedCookieString = btoa(JSON.stringify(cookieProps))
+  const domain = `.${window.location.host.split('.').slice(-2).join('.')}`
+  const sameSite = 'lax'
+  const expires = 'Fri, 31 Dec 9999 23:59:59 GMT'
+  const cookie = `${cookieName}=${encodedCookieString};domain=${domain};secure;samesite=${sameSite};expires=${expires}`
+  return cookie
+}
+/** @type {AnalyticsCookieObject} */
+const cookieMap = {
+  'Initial Marketing Source': 'utm_source',
+  'Initial Marketing Medium': 'utm_medium',
+  'Initial Marketing Campaign': 'utm_campaign',
+  'Initial Marketing Term': 'utm_term',
+  'Initial Marketing Content': 'utm_content',
+  'Initial Marketing Referrer': 'referrer',
+  'Initial Marketing Landing Page': 'page_url',
+}
+/**
+ * @param {HTMLDocument} document
+ * @returns {AnalyticsCookieObject}
+ */
+const makeCookieObject = (document) => {
+  /** @type {AnalyticsCookieObject} */
+  const params = {
+    referrer: document.referrer || null,
+    page_url: document.URL,
+  }
+  const currentUrl = new URL(window.location)
+  Object.keys(cookieMap).forEach(key => {
+    params[key] = currentUrl.searchParams.get(cookieMap[key])
+  })
+  return params
+}
+let analyticsCookie = getCookie(document, COOKIE_NAME)
+if (!analyticsCookie) {
+  analyticsCookie = makeCookieObject(document)
+  document.cookie = setCookie(COOKIE_NAME, analyticsCookie)
+}
